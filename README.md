@@ -1,447 +1,275 @@
-# Лабораторная работа №2 - Объектно-ориентированное программирование
+# Лабораторная работа №3 - Механизмы наследования в классах
 
 ## 📋 Описание проекта
 
-Данный проект представляет собой приложение для управления клиентами банка, разработанное в рамках лабораторной работы №2 по дисциплине "Объектно-ориентированное программирование". Приложение демонстрирует основные концепции ООП: свойства, коллекции, методы, привязку данных и работу с графикой в Windows Forms.
+Данный проект представляет собой приложение для управления клиентами банка, сотрудниками, студентами и преподавателями, разработанное в рамках лабораторной работы №3 по дисциплине "Объектно-ориентированное программирование". Приложение демонстрирует механизмы наследования, перегрузку методов, работу с файлами и различные способы передачи параметров.
 
 ## 🎯 Цели лабораторной работы
 
-1. Изучение и применение **свойств (Properties)** в C#
-2. Работа с **коллекциями** (List<T>)
-3. Реализация **привязки данных** (DataBindings) к элементам формы
-4. Работа с **графическими элементами** (PictureBox, OpenFileDialog)
-5. Демонстрация **перегрузки методов** (method overloading)
-6. Использование **статических методов** класса
+1. Изучение и применение **механизмов наследования** в C#
+2. Построение **иерархии классов** с использованием наследования
+3. Реализация **перегруженных методов** чтения/записи файлов
+4. Демонстрация различных способов **передачи параметров**: по значению, по ссылке (ref), выходные параметры (out)
+5. Реализация методов с **необязательными параметрами**
+6. Демонстрация **преобразований типов** (UpCasting и DownCasting)
+7. Разработка **вычислительных методов** (возраст, стаж, дни до сессии)
 
-## 🏗️ Структура проекта
+## 🏗️ Иерархия классов
 
-Проект состоит из двух частей:
-
-### 1. **BankLibrary** - Библиотека классов
-Содержит основной класс `Client` с бизнес-логикой:
-- Свойства клиента (ID, ФИО, баланс, дата рождения и т.д.)
-- Методы для работы со счетом
-- Статические методы для вспомогательных операций
-
-### 2. **BankTestApp** - Windows Forms приложение
-Пользовательский интерфейс для демонстрации функционала:
-- Форма с элементами управления
-- Коллекция клиентов
-- Привязка данных
-- Работа с изображениями
-
-## 📚 Подробное объяснение кода
-
-### Класс Client (BankLibrary/Client.cs)
-
-#### 1. Свойства (Properties)
-
-Свойства - это члены класса, которые предоставляют гибкий механизм для чтения, записи или вычисления значений полей.
-
-```csharp
-public string LastName
-{
-    get { return lastName; }
-    set
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            lastName = "";
-        }
-        else if (char.IsUpper(value[0]))
-        {
-            lastName = value;
-        }
-        else
-        {
-            throw new ArgumentException("Фамилия должна начинаться с заглавной буквы!");
-        }
-    }
-}
+```
+Object (базовый класс .NET)
+  └── Client (базовый класс проекта)
+      ├── Employee (Сотрудник)
+      │   └── Prepod (Преподаватель)
+      └── Student (Студент)
+          └── StudentDistant (Студент-заочник)
 ```
 
-**Объяснение:**
-- `get` - аксессор для чтения значения
-- `set` - аксессор для записи значения с валидацией
-- В данном примере проверяется, что фамилия начинается с заглавной буквы
-- Это демонстрирует **инкапсуляцию** - скрытие внутренней реализации и контроль доступа к данным
+### Класс Client
+**Основные свойства:**
+- `Id` - идентификатор клиента
+- `LastName`, `FirstName`, `MiddleName` - ФИО
+- `Balance` - баланс счёта
+- `BirthDate` - дата рождения
+- `IsVip` - признак VIP-клиента
 
-**Автоматические свойства:**
+**Ключевые методы:**
+- `GetAge()` - вычисление возраста клиента
+- `GetClientSummary()` - метод с 3 необязательными параметрами
+- `Transfer()` - перевод средств (3 перегруженные версии)
+- `WriteToFile()`, `ReadFromFile()` - работа с файлами (2 перегруженные версии)
+
+### Класс Employee : Client
+**Дополнительные свойства:**
+- `EmployeeId` - табельный номер
+- `HireDate` - дата приёма на работу
+- `Position` - должность
+
+**Новые методы:**
+- `GetExperience()` - вычисление стажа работы в годах
+- `AverageSalary()` - демонстрация передачи параметров (по значению, ref, out)
+
+### Класс Prepod : Employee
+**Дополнительные свойства:**
+- `Department` - кафедра
+- `Disciplines` - список преподаваемых дисциплин
+
+**Новые методы:**
+- `AddDiscipline()`, `RemoveDiscipline()` - управление дисциплинами
+- `GetDisciplinesList()` - получение списка дисциплин
+
+### Класс Student : Client
+**Дополнительные свойства:**
+- `Group` - учебная группа
+- `Course` - курс обучения
+- `AverageGrade` - средний балл
+- `Specialty` - специальность
+
+**Новые методы:**
+- `IsExcellentStudent()` - проверка на отличника (средний балл ≥ 4.5)
+- `HasScholarship()` - проверка наличия стипендии (средний балл ≥ 4.0)
+
+### Класс StudentDistant : Student
+**Дополнительные свойства:**
+- `SessionCity` - город проживания
+- `NextSessionDate` - дата следующей сессии
+- `WorkPlace` - место работы
+
+**Новые методы:**
+- `IsSessionSoon()` - проверка, скоро ли сессия (менее 30 дней)
+- `DaysUntilSession()` - количество дней до сессии
+
+## 📚 Реализованные механизмы
+
+### 1. Перегрузка методов
+
+#### Перегрузка конструкторов
 ```csharp
-public int Id { get; set; }
-public string FirstName { get; set; }
-public decimal Balance { get; set; }
-```
-Компилятор автоматически создает скрытое поле для хранения значения.
+// Конструктор по умолчанию
+public Client()
 
-#### 2. Статические члены класса
+// Конструктор с двумя параметрами
+public Client(string lastName, string firstName)
 
-**Статическое поле:**
-```csharp
-public static string BankName;
-```
-- Принадлежит классу, а не объекту
-- Одно значение для всех экземпляров класса
-- Доступ через имя класса: `Client.BankName`
-
-**Константа:**
-```csharp
-public const decimal TransferFeePercent = 1.5m;
-```
-- Значение устанавливается при компиляции
-- Не может быть изменено во время выполнения
-
-**Readonly поле:**
-```csharp
-public readonly DateTime RegistrationDate;
-```
-- Может быть установлено только в конструкторе
-- Каждый объект имеет своё значение
-- Не может быть изменено после создания объекта
-
-**Статический конструктор:**
-```csharp
-static Client()
-{
-    BankName = "ООО Тмыв Денег";
-}
-```
-- Вызывается автоматически перед первым использованием класса
-- Используется для инициализации статических полей
-
-#### 3. Перегрузка конструкторов
-
-```csharp
-// Конструктор без параметров
-public Client() { ... }
-
-// Конструктор с 2 параметрами
-public Client(string lastName, string firstName) { ... }
-
-// Конструктор с 3 параметрами
-public Client(string lastName, string firstName, decimal initialBalance) { ... }
+// Конструктор с тремя параметрами
+public Client(string lastName, string firstName, decimal initialBalance)
 
 // Полный конструктор
 public Client(int id, string lastName, string firstName, string middleName,
-              string passportNumber, string phoneNumber, decimal balance, bool isVip) { ... }
+              string passportNumber, string phoneNumber, decimal balance, bool isVip)
 ```
 
-**Объяснение:**
-- **Перегрузка конструкторов** позволяет создавать объекты разными способами
-- Каждый конструктор принимает разное количество параметров
-- Это пример **полиморфизма** - одно имя, разные реализации
-
-#### 4. Методы класса
-
-**Обычные методы:**
+#### Перегрузка методов чтения/записи файлов
 ```csharp
-public string GetFullName()
-{
-    return $"{LastName} {FirstName} {MiddleName}".Trim();
-}
+// Версия 1: принимает путь к файлу
+public void WriteToFile(string path)
 
-public void Deposit(decimal amount)
-{
-    if (amount > 0)
-    {
-        Balance += amount;
-    }
-}
+// Версия 2: принимает SaveFileDialog
+public void WriteToFile(SaveFileDialog dialog)
 
-public bool Withdraw(decimal amount)
+// Аналогично для ReadFromFile
+public void ReadFromFile(string path)
+public void ReadFromFile(OpenFileDialog dialog)
+```
+
+### 2. Передача параметров
+
+#### По значению (по умолчанию)
+```csharp
+public decimal AverageSalary(int colMonth, decimal[] salaries)
 {
-    if (amount > 0 && amount <= Balance)
-    {
-        Balance -= amount;
-        return true;
-    }
-    return false;
+    colMonth = 999;  // изменение НЕ сохранится
+    // ...
 }
 ```
 
-#### 5. Перегрузка методов (Method Overloading)
-
-Три варианта метода `Transfer()` с разными параметрами:
-
+#### По ссылке (ref)
 ```csharp
-// Вариант 1: базовый перевод
-public bool Transfer(Client recipient, decimal amount)
+public decimal AverageSalary(ref int colMonth, decimal[] salaries)
 {
-    if (amount <= 0 || amount > Balance)
-        return false;
-    
-    Balance -= amount;
-    recipient.Balance += amount;
-    return true;
-}
-
-// Вариант 2: перевод с комментарием
-public bool Transfer(Client recipient, decimal amount, string comment)
-{
-    if (amount <= 0 || amount > Balance)
-        return false;
-    
-    Balance -= amount;
-    recipient.Balance += amount;
-    return true;
-}
-
-// Вариант 3: перевод с учетом комиссии
-public bool Transfer(Client recipient, decimal amount, bool withFee)
-{
-    if (amount <= 0)
-        return false;
-    
-    decimal totalAmount = amount;
-    if (withFee)
-    {
-        totalAmount = amount + (amount * TransferFeePercent / 100);
-    }
-    
-    if (totalAmount > Balance)
-        return false;
-    
-    Balance -= totalAmount;
-    recipient.Balance += amount;
-    return true;
+    colMonth = 999;  // изменение СОХРАНИТСЯ
+    // ...
 }
 ```
 
-**Объяснение:**
-- Все три метода имеют одинаковое имя `Transfer`
-- Отличаются **сигнатурой** (типом и количеством параметров)
-- Компилятор автоматически выбирает нужный метод по переданным аргументам
-- Это **полиморфизм времени компиляции**
+#### Выходные параметры (out)
+```csharp
+public decimal AverageSalary(decimal[] salaries, out decimal minSalary, out decimal maxSalary)
+{
+    // Метод возвращает 3 значения: return + 2 out параметра
+}
+```
 
-#### 6. Статические методы
+#### Необязательные параметры (3 параметра)
+```csharp
+public string GetClientSummary(bool includeBalance = true, 
+                              bool includeAge = true, 
+                              bool includeVipStatus = false)
+{
+    // Можно вызывать с разным количеством аргументов
+}
+```
+
+### 3. Работа с файлами (StreamReader/StreamWriter)
+
+**Запись данных:**
+```csharp
+using (StreamWriter writer = new StreamWriter(path))
+{
+    writer.WriteLine($"ID:{Id}");
+    writer.WriteLine($"Фамилия:{LastName}");
+    writer.WriteLine($"Имя:{FirstName}");
+    writer.WriteLine($"Возраст:{GetAge()}");
+    // ... остальные поля
+}
+```
+
+**Чтение данных:**
+```csharp
+using (StreamReader reader = new StreamReader(path))
+{
+    string line;
+    while ((line = reader.ReadLine()) != null)
+    {
+        string[] parts = line.Split(':');
+        // Обработка данных
+    }
+}
+```
+
+### 4. Преобразования типов
+
+#### UpCasting (восходящее преобразование)
+```csharp
+Student student = new Student("Петров", "Петр", "ПИ-101", 2);
+Client clientRef = student;  // НЕЯВНОЕ преобразование
+```
+
+#### DownCasting (нисходящее преобразование)
+```csharp
+Client clientRef = student;
+Student studentRef = (Student)clientRef;  // ЯВНОЕ преобразование
+```
+
+#### Безопасная проверка типов
+```csharp
+// Оператор is
+if (clientRef is Student)
+{
+    Student s = (Student)clientRef;
+}
+
+// Оператор as
+Student s = clientRef as Student;
+if (s != null)
+{
+    // Безопасное использование
+}
+```
+
+### 5. Вычислительные методы
 
 ```csharp
-public static int CalculateAge(DateTime birthDate)
+// Вычисление возраста
+public int GetAge()
+{
+    return CalculateAge(this.BirthDate);
+}
+
+// Вычисление стажа работы
+public int GetExperience()
 {
     DateTime today = DateTime.Today;
-    int age = today.Year - birthDate.Year;
-    
-    if (birthDate.Date > today.AddYears(-age))
-    {
-        age--;
-    }
-    
-    return age;
+    int years = today.Year - HireDate.Year;
+    if (HireDate.Date > today.AddYears(-years))
+        years--;
+    return years;
 }
 
-public static Client GetRicherClient(Client client1, Client client2)
+// Вычисление дней до сессии
+public int DaysUntilSession()
 {
-    if (client1 == null || client2 == null)
-        return null;
-    
-    return client1.Balance >= client2.Balance ? client1 : client2;
+    TimeSpan diff = NextSessionDate - DateTime.Now;
+    return diff.Days;
 }
 ```
-
-**Объяснение:**
-- Статические методы принадлежат классу, а не объекту
-- Вызываются через имя класса: `Client.CalculateAge(date)`
-- Не имеют доступа к полям экземпляра (this)
-- Используются для вспомогательных операций
-
-#### 7. Переопределение метода ToString()
-
-```csharp
-public override string ToString()
-{
-    return $"{GetFullName()}, Баланс: {Balance:F2} руб.";
-}
-```
-
-**Объяснение:**
-- Переопределяем метод из базового класса `Object`
-- Вызывается автоматически при выводе объекта в строку
-- Используется для удобного отображения в ListBox
-
-### Форма BankTestApp (Form1.cs)
-
-#### 1. Коллекции
-
-```csharp
-private List<Client> clients = new List<Client>();
-```
-
-**Объяснение:**
-- `List<T>` - обобщенная коллекция для хранения объектов типа T
-- Динамический размер (автоматически увеличивается)
-- Методы: `Add()`, `Remove()`, `Clear()`, индексатор `[]`
-
-#### 2. Привязка данных (DataBindings)
-
-```csharp
-private void InitializeBindings()
-{
-    currentClient = new Client("Иванов", "Иван", 10000m);
-    
-    txtLastName.DataBindings.Add("Text", currentClient, "LastName", 
-        false, DataSourceUpdateMode.OnPropertyChanged);
-    txtFirstName.DataBindings.Add("Text", currentClient, "FirstName", 
-        false, DataSourceUpdateMode.OnPropertyChanged);
-    txtBalance.DataBindings.Add("Text", currentClient, "Balance", 
-        true, DataSourceUpdateMode.OnPropertyChanged, "0", "F2");
-    dtpBirthDate.DataBindings.Add("Value", currentClient, "BirthDate", 
-        false, DataSourceUpdateMode.OnPropertyChanged);
-    chkIsVip.DataBindings.Add("Checked", currentClient, "IsVip", 
-        false, DataSourceUpdateMode.OnPropertyChanged);
-}
-```
-
-**Объяснение:**
-- **DataBindings** связывают свойство элемента управления со свойством объекта
-- Изменения автоматически синхронизируются в обе стороны
-- Параметры:
-  - `"Text"` - свойство элемента управления
-  - `currentClient` - объект-источник данных
-  - `"LastName"` - свойство объекта
-  - `DataSourceUpdateMode.OnPropertyChanged` - режим обновления
-
-#### 3. Работа с коллекцией и ListBox
-
-```csharp
-private void btnAddClient_Click(object sender, EventArgs e)
-{
-    try
-    {
-        Client newClient = new Client
-        {
-            Id = clients.Count + 1,
-            LastName = txtLastName.Text,
-            FirstName = txtFirstName.Text,
-            Balance = decimal.Parse(txtBalance.Text),
-            BirthDate = dtpBirthDate.Value,
-            IsVip = chkIsVip.Checked
-        };
-        
-        clients.Add(newClient);
-        UpdateClientList();
-        
-        Output($"✅ Клиент добавлен в коллекцию!\n\nВсего клиентов: {clients.Count}");
-    }
-    catch (ArgumentException ex)
-    {
-        Output($"❌ ОШИБКА: {ex.Message}");
-    }
-}
-
-private void UpdateClientList()
-{
-    listBoxClients.Items.Clear();
-    foreach (Client c in clients)
-    {
-        listBoxClients.Items.Add(c.ToString());
-    }
-}
-```
-
-**Объяснение:**
-- Создаём новый объект с помощью **инициализатора объекта**
-- Добавляем в коллекцию методом `Add()`
-- Обновляем ListBox, перебирая коллекцию через `foreach`
-- `ToString()` вызывается автоматически при добавлении в ListBox
-
-#### 4. Работа с графикой
-
-```csharp
-private void btnLoadFoto_Click(object sender, EventArgs e)
-{
-    if (openFileDialogFoto.ShowDialog() == DialogResult.OK)
-    {
-        try
-        {
-            Image img = Image.FromFile(openFileDialogFoto.FileName);
-            pictureBoxFoto.Image = img;
-            pictureBoxFoto.SizeMode = PictureBoxSizeMode.Zoom;
-            
-            if (currentClient != null)
-            {
-                currentClient.PhotoPath = openFileDialogFoto.FileName;
-            }
-            
-            Output($"✅ Фото загружено успешно!");
-        }
-        catch (Exception ex)
-        {
-            Output($"❌ ОШИБКА при загрузке изображения:\n{ex.Message}");
-        }
-    }
-}
-```
-
-**Объяснение:**
-- `OpenFileDialog` - диалоговое окно для выбора файла
-- `Image.FromFile()` - загрузка изображения из файла
-- `PictureBox.Image` - отображение изображения в элементе управления
-- `SizeMode.Zoom` - масштабирование с сохранением пропорций
-
-#### 5. Обработка событий
-
-```csharp
-private void listBoxClients_SelectedIndexChanged(object sender, EventArgs e)
-{
-    if (listBoxClients.SelectedIndex >= 0)
-    {
-        Client selectedClient = clients[listBoxClients.SelectedIndex];
-        Output($"📋 ВЫБРАН КЛИЕНТ:\n\n{selectedClient.GetClientInfo()}");
-        
-        if (!string.IsNullOrEmpty(selectedClient.PhotoPath))
-        {
-            try
-            {
-                pictureBoxFoto.Image = Image.FromFile(selectedClient.PhotoPath);
-            }
-            catch { }
-        }
-    }
-}
-```
-
-**Объяснение:**
-- Событие срабатывает при выборе элемента в ListBox
-- `SelectedIndex` - индекс выбранного элемента
-- Получаем объект клиента из коллекции по индексу
-- Отображаем информацию и фото выбранного клиента
-
-## 🔑 Ключевые концепции ООП в проекте
-
-### 1. **Инкапсуляция**
-- Скрытие данных через private поля
-- Доступ к данным через свойства с валидацией
-- Пример: `LastName` с проверкой заглавной буквы
-
-### 2. **Полиморфизм**
-- Перегрузка конструкторов (4 варианта)
-- Перегрузка методов (`Transfer` - 3 варианта)
-- Переопределение `ToString()`
-
-### 3. **Абстракция**
-- Класс `Client` представляет абстрактную модель клиента банка
-- Скрывает сложность реализации за простым интерфейсом
 
 ## 🎓 Демонстрируемые возможности
 
-### Windows Forms элементы:
-- ✅ **TextBox** - ввод текста
-- ✅ **ListBox** - список клиентов
-- ✅ **Button** - кнопки действий
-- ✅ **DateTimePicker** - выбор даты
-- ✅ **CheckBox** - флаг VIP-клиента
-- ✅ **PictureBox** - отображение фото
-- ✅ **OpenFileDialog** - выбор файла
+### Механизмы наследования:
+- ✅ Иерархия классов с 4 уровнями наследования
+- ✅ Цепочки вызовов конструкторов базового класса
+- ✅ Наследование свойств и методов
+- ✅ Переопределение методов (ToString)
+- ✅ Демонстрация наследования от Object
 
-### C# возможности:
-- ✅ Свойства с get/set и валидацией
-- ✅ Автоматические свойства
-- ✅ Коллекции (List<T>)
-- ✅ Привязка данных (DataBindings)
-- ✅ Перегрузка методов и конструкторов
-- ✅ Статические члены класса
-- ✅ Обработка исключений (try-catch)
-- ✅ Инициализаторы объектов
+### Перегрузка методов:
+- ✅ Перегруженные конструкторы (4 версии)
+- ✅ Перегруженные методы Transfer (3 версии)
+- ✅ Перегруженные методы чтения/записи (2 версии в каждом классе)
+
+### Передача параметров:
+- ✅ По значению (int)
+- ✅ По ссылке (ref)
+- ✅ Выходные параметры (out)
+- ✅ Необязательные параметры (3 параметра)
+
+### Работа с файлами:
+- ✅ StreamWriter для записи
+- ✅ StreamReader для чтения
+- ✅ Реализовано в каждом классе иерархии
+
+### Преобразования типов:
+- ✅ UpCasting (неявное)
+- ✅ DownCasting (явное)
+- ✅ Операторы is и as
+
+### Windows Forms элементы:
+- ✅ TextBox, ListBox, Button
+- ✅ DateTimePicker
+- ✅ CheckBox
+- ✅ ComboBox для выбора из справочников
+- ✅ OpenFileDialog, SaveFileDialog
 
 ## 🚀 Как запустить проект
 
@@ -451,69 +279,44 @@ private void listBoxClients_SelectedIndexChanged(object sender, EventArgs e)
 
 ## 📖 Как использовать приложение
 
-1. **Добавление клиента:**
-   - Заполните поля: Фамилия, Имя, Баланс
-   - Выберите дату рождения
-   - Отметьте VIP при необходимости
-   - Нажмите "Добавить клиента"
+### Вкладка "Клиент (Client)":
+- Заполните поля ФИО, баланс, дата рождения
+- Протестируйте статические методы
+- Добавьте клиента в коллекцию
 
-2. **Загрузка фото:**
-   - Нажмите "Загрузить фото"
-   - Выберите изображение
-   - Фото отобразится в PictureBox
+### Вкладка "Сотрудник (Employee)":
+- Создайте объект Employee
+- Протестируйте передачу параметров:
+  - По значению
+  - По ссылке (ref)
+  - Выходные параметры (out)
+- Сохраните/загрузите данные в файл
 
-3. **Просмотр клиентов:**
-   - Выберите клиента из списка
-   - Информация отобразится внизу
+### Вкладка "Преподаватель (Prepod)":
+- Создайте объект Prepod
+- Выберите кафедру из справочника
+- Назначьте дисциплины
+- Продемонстрируйте наследование методов
 
-4. **Статические методы:**
-   - Нажмите "Вызвать статический метод"
-   - Увидите расчет возраста и сравнение клиентов
+### Вкладка "Студент (Student)":
+- Создайте объект Student или StudentDistant
+- Продемонстрируйте цепочку наследования
+- Протестируйте преобразования типов (UpCasting/DownCasting)
 
-## 📝 Защита лабораторной работы
-
-### Вопросы, которые может задать преподаватель:
-
-**1. Что такое свойства в C#?**
-- Свойства - это члены класса, которые предоставляют гибкий механизм для чтения и записи полей
-- Состоят из аксессоров get и set
-- Позволяют добавить валидацию и логику при обращении к данным
-
-**2. В чем разница между полем и свойством?**
-- Поле - это переменная класса
-- Свойство - это метод, который выглядит как поле
-- Свойства обеспечивают инкапсуляцию и контроль доступа
-
-**3. Что такое перегрузка методов?**
-- Несколько методов с одинаковым именем, но разными параметрами
-- Компилятор выбирает нужный метод по сигнатуре
-- Пример полиморфизма времени компиляции
-
-**4. Зачем нужны статические члены класса?**
-- Принадлежат классу, а не объекту
-- Общие данные для всех экземпляров
-- Вспомогательные методы, не зависящие от состояния объекта
-
-**5. Что такое привязка данных?**
-- Механизм автоматической синхронизации между UI и объектом
-- Изменения в TextBox автоматически отражаются в свойстве объекта
-- Упрощает код и уменьшает количество обработчиков событий
-
-**6. В чем разница между const и readonly?**
-- `const` - константа времени компиляции, общая для всех
-- `readonly` - константа времени выполнения, может иметь разные значения для каждого объекта
-
-**7. Зачем переопределять ToString()?**
-- Для удобного отображения объекта в строковом виде
-- Автоматически вызывается при выводе объекта
-- Используется в ListBox, ComboBox и других элементах
+### Вкладка "Необязательные параметры":
+- Протестируйте все варианты вызова метода с необязательными параметрами
+- Используйте именованные параметры
 
 ## 📊 Структура решения
 
 ```
 BankLibrary/
 ├── BankLibrary/              # Библиотека классов
-│   ├── Client.cs            # Основной класс клиента
+│   ├── Client.cs            # Базовый класс
+│   ├── Employee.cs          # Наследник Client
+│   ├── Prepod.cs            # Наследник Employee
+│   ├── Student.cs           # Наследник Client
+│   ├── StudentDistant.cs    # Наследник Student
 │   └── Properties/
 │       └── AssemblyInfo.cs
 ├── BankTestApp/             # Windows Forms приложение
@@ -525,9 +328,51 @@ BankLibrary/
 └── BankLibrary.slnx        # Файл решения
 ```
 
+## 🔑 Ключевые концепции ООП в проекте
+
+### 1. **Наследование**
+- Повторное использование кода базового класса
+- Расширение функциональности в классах-наследниках
+- Цепочка: Object → Client → Employee → Prepod
+
+### 2. **Инкапсуляция**
+- Свойства с get/set
+- Валидация данных (например, LastName должна начинаться с заглавной буквы)
+- Скрытие реализации
+
+### 3. **Полиморфизм**
+- Перегрузка конструкторов и методов
+- Переопределение ToString()
+- Различное поведение методов в зависимости от типа
+
+### 4. **Абстракция**
+- Иерархия от общего (Client) к специфичному (StudentDistant)
+- Выделение общих характеристик в базовый класс
+
+## 📝 Выполненные требования лабораторной работы №3
+
+✅ Создана иерархия классов с наследованием  
+✅ Реализованы перегруженные конструкторы  
+✅ Разработаны перегруженные методы чтения/записи файлов (StreamReader/StreamWriter)  
+✅ Созданы вычислительные методы (возраст, стаж, дни до сессии)  
+✅ Продемонстрированы все способы передачи параметров:
+- По значению
+- По ссылке (ref)
+- Выходные параметры (out)
+- Необязательные параметры (3 параметра)
+
+✅ Реализованы преобразования типов (UpCasting и DownCasting)  
+✅ Продемонстрировано наследование от Object  
+✅ Разработан интерфейс пользователя для тестирования
+
+## 📄 Подробная документация
+
+Подробное описание реализации всех механизмов находится в файле:  
+`Пояснения_к_лабораторной_работе_3.md`
+
 ## 👨‍💻 Автор
 
-Выполнено в рамках лабораторной работы №2 по дисциплине "Объектно-ориентированное программирование"
+Выполнено в рамках лабораторной работы №3 по дисциплине "Объектно-ориентированное программирование"
 
 ## 📅 Дата создания
 
