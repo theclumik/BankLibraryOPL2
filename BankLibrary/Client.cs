@@ -365,5 +365,152 @@ namespace BankLibrary
         {
             return $"{GetFullName()}, Баланс: {Balance:F2} руб.";
         }
+
+        /// <summary>
+        /// Вычисление возраста клиента.
+        /// Использует текущую дату рождения объекта.
+        /// </summary>
+        public int GetAge()
+        {
+            return CalculateAge(this.BirthDate);
+        }
+
+        // МЕТОДЫ РАБОТЫ С ФАЙЛАМИ (чтение/запись)
+
+        /// <summary>
+        /// Запись данных клиента в текстовый файл.
+        /// Версия 1: принимает путь к файлу в виде строки.
+        /// </summary>
+        /// <param name="path">Путь к файлу для записи</param>
+        public void WriteToFile(string path)
+        {
+            try
+            {
+                // Создаём объект для записи в файл
+                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(path))
+                {
+                    // Записываем данные клиента в файл
+                    writer.WriteLine($"ID:{Id}");
+                    writer.WriteLine($"Фамилия:{LastName}");
+                    writer.WriteLine($"Имя:{FirstName}");
+                    writer.WriteLine($"Возраст:{GetAge()}");
+                    writer.WriteLine($"Баланс:{Balance}");
+                    writer.WriteLine($"Дата рождения:{BirthDate:dd.MM.yyyy}");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception($"Ошибка записи в файл: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Запись данных клиента в текстовый файл.
+        /// Версия 2 (ПЕРЕГРУЖЕННЫЙ МЕТОД): принимает объект SaveFileDialog.
+        /// </summary>
+        /// <param name="dialog">Диалог сохранения файла</param>
+        public void WriteToFile(System.Windows.Forms.SaveFileDialog dialog)
+        {
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                WriteToFile(dialog.FileName);
+            }
+        }
+
+        /// <summary>
+        /// Чтение данных клиента из текстового файла.
+        /// Версия 1: принимает путь к файлу в виде строки.
+        /// </summary>
+        /// <param name="path">Путь к файлу для чтения</param>
+        public void ReadFromFile(string path)
+        {
+            try
+            {
+                // Создаём объект для чтения из файла
+                using (System.IO.StreamReader reader = new System.IO.StreamReader(path))
+                {
+                    string line;
+                    // Читаем файл построчно
+                    while ((line = reader.ReadLine()) != null)
+                    {
+                        // Разделяем строку на ключ и значение
+                        string[] parts = line.Split(':');
+                        if (parts.Length == 2)
+                        {
+                            string key = parts[0].Trim();
+                            string value = parts[1].Trim();
+
+                            // Заполняем свойства объекта
+                            switch (key)
+                            {
+                                case "ID":
+                                    Id = int.Parse(value);
+                                    break;
+                                case "Фамилия":
+                                    LastName = value;
+                                    break;
+                                case "Имя":
+                                    FirstName = value;
+                                    break;
+                                case "Баланс":
+                                    Balance = decimal.Parse(value);
+                                    break;
+                                case "Дата рождения":
+                                    BirthDate = DateTime.ParseExact(value, "dd.MM.yyyy", null);
+                                    break;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception($"Ошибка чтения из файла: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// Чтение данных клиента из текстового файла.
+        /// Версия 2 (ПЕРЕГРУЖЕННЫЙ МЕТОД): принимает объект OpenFileDialog.
+        /// </summary>
+        /// <param name="dialog">Диалог открытия файла</param>
+        public void ReadFromFile(System.Windows.Forms.OpenFileDialog dialog)
+        {
+            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            {
+                ReadFromFile(dialog.FileName);
+            }
+        }
+
+        // МЕТОДЫ С НЕОБЯЗАТЕЛЬНЫМИ ПАРАМЕТРАМИ
+
+        /// <summary>
+        /// Получение краткой информации о клиенте.
+        /// Демонстрирует использование необязательных параметров (3 параметра).
+        /// </summary>
+        /// <param name="includeBalance">Включить баланс в вывод (по умолчанию true)</param>
+        /// <param name="includeAge">Включить возраст в вывод (по умолчанию true)</param>
+        /// <param name="includeVipStatus">Включить VIP-статус в вывод (по умолчанию false)</param>
+        public string GetClientSummary(bool includeBalance = true, bool includeAge = true, bool includeVipStatus = false)
+        {
+            string summary = $"{GetFullName()}";
+
+            if (includeAge)
+            {
+                summary += $", {GetAge()} лет";
+            }
+
+            if (includeBalance)
+            {
+                summary += $", Баланс: {Balance:F2} руб.";
+            }
+
+            if (includeVipStatus)
+            {
+                summary += $", VIP: {(IsVip ? "Да" : "Нет")}";
+            }
+
+            return summary;
+        }
     }
 }
