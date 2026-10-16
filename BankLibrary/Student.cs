@@ -3,10 +3,11 @@ using System;
 namespace BankLibrary
 {
     /// <summary>
-    /// Класс Student (Студент) — наследник класса Client.
+    /// Класс Student (Студент) — наследник класса Employee.
     /// Представляет студента учебного заведения.
+    /// ИЗМЕНЕНО В ЛР4: Теперь наследуется от абстрактного класса Employee.
     /// </summary>
-    public class Student : Client
+    public class Student : Employee
     {
         /// <summary>
         /// Номер учебной группы.
@@ -120,6 +121,81 @@ namespace BankLibrary
             info += $"\nОтличник: {(IsExcellentStudent() ? "Да" : "Нет")}";
             info += $"\nСтипендия: {(HasScholarship() ? "Да" : "Нет")}";
             return info;
+        }
+
+        // ==================== РЕАЛИЗАЦИЯ АБСТРАКТНЫХ МЕТОДОВ ЛР4 ====================
+
+        /// <summary>
+        /// РЕАЛИЗАЦИЯ АБСТРАКТНОГО МЕТОДА: Получение текста с именем студента.
+        /// </summary>
+        public override string NameText()
+        {
+            return $"Студент {GetFullName()}, группа {Group}";
+        }
+
+        /// <summary>
+        /// РЕАЛИЗАЦИЯ АБСТРАКТНОГО СВОЙСТВА: Краткое описание роли студента.
+        /// </summary>
+        public override string RoleDescription
+        {
+            get { return $"Студент {Course} курса, группа {Group}, средний балл: {AverageGrade:F2}"; }
+        }
+
+        // ==================== ПЕРЕОПРЕДЕЛЕНИЕ ВИРТУАЛЬНЫХ МЕТОДОВ ====================
+
+        /// <summary>
+        /// ПЕРЕОПРЕДЕЛЕНИЕ ВИРТУАЛЬНОГО МЕТОДА: Отображение информации о студенте.
+        /// </summary>
+        public override string ShowInfo()
+        {
+            string baseInfo = base.ShowInfo();
+            return baseInfo + $"\nГруппа: {Group}\nКурс: {Course}\nСредний балл: {AverageGrade:F2}";
+        }
+
+        /// <summary>
+        /// ПЕРЕОПРЕДЕЛЕНИЕ ВИРТУАЛЬНОГО СВОЙСТВА: Проверка возраста студента.
+        /// Студент должен быть в возрасте 16-35 лет.
+        /// </summary>
+        public override DateTime DateOfBirth
+        {
+            get { return base.DateOfBirth; }
+            set
+            {
+                int age = Client.CalculateAge(value);
+                if (age < 16 || age > 35)
+                {
+                    throw new ArgumentException("Возраст студента должен быть от 16 до 35 лет!");
+                }
+                base.DateOfBirth = value;
+            }
+        }
+
+        // ==================== ДЕМОНСТРАЦИЯ СОКРЫТИЯ МЕТОДА (new) ====================
+
+        /// <summary>
+        /// СОКРЫТИЕ МЕТОДА: Новая реализация WriteToFile с ключевым словом new.
+        /// Заменяет (скрывает) метод базового класса Employee, а не переопределяет его.
+        /// </summary>
+        public new void WriteToFile(string path)
+        {
+            try
+            {
+                using (System.IO.StreamWriter writer = new System.IO.StreamWriter(path))
+                {
+                    writer.WriteLine($"=== ДАННЫЕ СТУДЕНТА ===");
+                    writer.WriteLine($"Фамилия:{LastName}");
+                    writer.WriteLine($"Имя:{FirstName}");
+                    writer.WriteLine($"Группа:{Group}");
+                    writer.WriteLine($"Курс:{Course}");
+                    writer.WriteLine($"Средний балл:{AverageGrade:F2}");
+                    writer.WriteLine($"Специальность:{Specialty}");
+                    writer.WriteLine($"\nЭто СКРЫТАЯ версия метода (new), а не переопределенная (override)!");
+                }
+            }
+            catch (System.Exception ex)
+            {
+                throw new System.Exception($"Ошибка записи в файл: {ex.Message}");
+            }
         }
 
         // ПЕРЕГРУЖЕННЫЕ МЕТОДЫ РАБОТЫ С ФАЙЛАМИ
